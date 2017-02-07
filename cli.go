@@ -146,6 +146,10 @@ func main() {
 			Name:  "webroot",
 			Usage: "Set the webroot folder to use for HTTP based challenges to write directly in a file in .well-known/acme-challenge",
 		},
+		cli.StringFlag{
+			Name:  "endpoint",
+			Usage: "Set the HTTP endpoint to use for HTTP based challenges",
+		},
 		cli.StringSliceFlag{
 			Name:  "memcached-host",
 			Usage: "Set the memcached host(s) to use for HTTP based challenges. Challenges will be written to all specified hosts.",

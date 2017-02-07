@@ -16,6 +16,7 @@ import (
 	"github.com/urfave/cli"
 	"github.com/xenolf/lego/acme"
 	"github.com/xenolf/lego/providers/dns"
+	"github.com/xenolf/lego/providers/http/endpoint"
 	"github.com/xenolf/lego/providers/http/memcached"
 	"github.com/xenolf/lego/providers/http/webroot"
 )
@@ -87,6 +88,17 @@ func setup(c *cli.Context) (*Configuration, *Account, *acme.Client) {
 		// infer that the user also wants to exclude all other challenges
 		client.ExcludeChallenges([]acme.Challenge{acme.DNS01, acme.TLSSNI01})
 	}
+
+	if c.GlobalIsSet("endpoint") {
+		provider, err := endpoint.NewEndpointProvider(c.GlobalString("endpoint"))
+		if err != nil {
+			logger().Fatal(err)
+		}
+
+		client.SetChallengeProvider(acme.HTTP01, provider)
+		client.ExcludeChallenges([]acme.Challenge{acme.DNS01, acme.TLSSNI01})
+	}
+
 	if c.GlobalIsSet("memcached-host") {
 		provider, err := memcached.NewMemcachedProvider(c.GlobalStringSlice("memcached-host"))
 		if err != nil {
@@ -114,7 +126,7 @@ func setup(c *cli.Context) (*Configuration, *Account, *acme.Client) {
 	}
 
 	if c.GlobalIsSet("dns") {
-    provider, err := dns.NewDNSChallengeProviderByName(c.GlobalString("dns"))
+		provider, err := dns.NewDNSChallengeProviderByName(c.GlobalString("dns"))
 		if err != nil {
 			logger().Fatal(err)
 		}
